@@ -177,4 +177,32 @@ describe('bin/swig configure module', function () {
       });
     });
   });
+
+  it('custom filters', function (done) {
+    var conf = fixPath(__dirname + '/bin.swig-conf.js'),
+      template = '<= "world"|hello =>',
+      p = tmp + '/conf.test.html';
+    fs.writeFile(p, template, function () {
+      exec('node ' + bin + ' compile ' + p + ' --conf ' + conf + ' -o ' + tmp, function (err, stdout, stderr) {
+        exec('node ' + bin + ' run ' + p + ' --conf ' + conf, function (err, stdout, stdrr) {
+          expect(stdout.replace(/\n$/, '')).to.equal('hello world');
+          done();
+        });
+      });
+    });
+  });
+
+  it('custom tags', function (done) {
+    var conf = fixPath(__dirname + '/bin.swig-conf.js'),
+      template = '<% world %>hello<% endworld %>',
+      p = tmp + '/conf.test.html';
+    fs.writeFile(p, template, function () {
+      exec('node ' + bin + ' compile ' + p + ' --conf ' + conf + ' -o ' + tmp, function (err, stdout, stderr) {
+        exec('node ' + bin + ' run ' + p + ' --conf ' + conf, function (err, stdout, stdrr) {
+          expect(stdout.replace(/\n$/, '')).to.equal('hello world');
+          done();
+        });
+      });
+    });
+  });
 });
